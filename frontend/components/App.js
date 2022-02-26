@@ -158,13 +158,13 @@ export default function App() {
           <Route path="articles" element={
             <>
               <ArticleForm 
-              article={articles.find((article) => {
-                return article.article_id == currentArticleId
-              })}
-              postArticle={postArticle}
-              updateArticle={updateArticle}
-              currentArticleId={currentArticleId}
-              />
+                article={articles.find((article) => {
+                  return article.article_id === currentArticleId
+                })}
+                updateArticle={updateArticle} 
+                postArticle={postArticle}
+                currentArticleId={currentArticleId}
+                />
               <Articles 
               getArticles={getArticles}
               articles={articles}
