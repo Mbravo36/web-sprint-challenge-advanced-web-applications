@@ -23,33 +23,38 @@ export default function App() {
   const redirectToLogin = () => { navigate('/')/* ✨ implement */ }
   const redirectToArticles = () => { navigate('/articles') /* ✨ implement */ }
 
+  const flush = () => {
+    setMessage('');
+    setSpinnerOn(true);
+  }
+
   const logout = () => {
     // ✨ implement
     // If a token is in local storage it should be removed,
     // and a message saying "Goodbye!" should be set in its proper state.
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
-    window.localStorage.removeItem('token')
-    redirectToLogin();
+    localStorage.removeItem('token')
     setMessage('Goodbye!');
+    redirectToLogin();
   }
 
   const login = ({ username, password }) => {
     // ✨ implement
     // We should flush the message state, turn on the spinner
     // and launch a request to the proper endpoint.
+    flush()
     axios.post(loginUrl, {username, password})
     .then(res => {
-      spinnerOn(true)
-      window.localStorage.setItem('token', res.data.token )
+      localStorage.setItem('token', res.data.token )
       setMessage(res.data.message)
       redirectToArticles();
     })
     .catch(err => {
       console.error(err)
     })
-    .finally(
-      setSpinnerOn(false));
+    .finally(()=>{setSpinnerOn(false)})
+      
     // On success, we should set the token to local storage in a 'token' key,
     // put the server success message in its proper state, and redirect
     // to the Articles screen. Don't forget to turn off the spinner!
@@ -59,12 +64,28 @@ export default function App() {
   const getArticles = () => {
     // ✨ implement
     // We should flush the message state, turn on the spinner
+    flush()
     // and launch an authenticated request to the proper endpoint.
+    axiosWithAuth().get(articlesUrl)
     // On success, we should set the articles in their proper state and
+    .then(res => {
+      setArticles(res.data.articles)
+      setMessage(res.data.message)
+    })
     // put the server success message in its proper state.
     // If something goes wrong, check the status of the response:
+    .catch(err => {
+      if(err.response.status === 401){
+        redirectToLogin()
+      } else {
+        console.error(err)
+      }
+    })
     // if it's a 401 the token might have gone bad, and we should redirect to login.
     // Don't forget to turn off the spinner!
+    .finally(() => {
+      setSpinnerOn(false)
+    })
   }
 
   const postArticle = article => {
@@ -72,11 +93,37 @@ export default function App() {
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+    flush()
+    axiosWithAuth().post(articlesUrl, article)
+    .then(res => {
+      setArticles(res.data.articles.concat(res.data.article))
+      setMessage(res.data.message)
+    })
+    .catch(err => {
+      if(err.response.status === 401){
+        redirectToLogin()
+      } else {
+        console.error(err)
+      }
+    })
+    .finally(() => {
+      setSpinnerOn(false)
+    })
   }
 
   const updateArticle = ({ article_id, article }) => {
     // ✨ implement
     // You got this!
+    axiosWithAuth().put(`${articlesUrl}/${article_id}`, article)
+    .then(res => {
+      setArticles(articles.map(art => {
+        return (art.id === article_id) ? res.data.article : art
+      }))
+      setCurrentArticleId()
+    })
+    .catch(err => {
+      console.error(err)
+    })
   }
 
   const deleteArticle = article_id => {
@@ -99,8 +146,18 @@ export default function App() {
           <Route path="/" element={<LoginForm login = {login} />} />
           <Route path="articles" element={
             <>
-              <ArticleForm />
-              <Articles />
+              <ArticleForm 
+              article={articles.find((article) => {
+                return article.article_id == currentArticleId
+              })}
+              postArticle={postArticle}
+              updateArticle={updateArticle}
+              />
+              <Articles 
+              getArticles={getArticles}
+              articles={articles}
+              setCurrentArticleId={setCurrentArticleId}
+              />
             </>
           } />
         </Routes>
