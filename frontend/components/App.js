@@ -34,7 +34,7 @@ export default function App() {
     // and a message saying "Goodbye!" should be set in its proper state.
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
-    localStorage.removeItem('token')
+    window.localStorage.removeItem('token')
     setMessage('Goodbye!');
     redirectToLogin();
   }
@@ -46,7 +46,7 @@ export default function App() {
     flush()
     axios.post(loginUrl, {username, password})
     .then(res => {
-      localStorage.setItem('token', res.data.token )
+      window.localStorage.setItem('token', res.data.token )
       setMessage(res.data.message)
       redirectToArticles();
     })
@@ -131,7 +131,7 @@ export default function App() {
     .then(res => {
       setMessage(res.data.message)
       setArticles(articles.filter((art) => {
-        return art.id !== id
+        return art.article_id != article_id
       }))
     })
     .catch(err => {
@@ -158,8 +158,8 @@ export default function App() {
           <Route path="articles" element={
             <>
               <ArticleForm 
-                article={articles.find((article) => {
-                  return article.article_id === currentArticleId
+                article={articles.find((art) => {
+                  return art.article_id === currentArticleId
                 })}
                 updateArticle={updateArticle} 
                 postArticle={postArticle}
