@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import React, { useEffect, useState } from 'react'
 import PT from 'prop-types'
 
@@ -8,8 +9,7 @@ export default function ArticleForm(props) {
   // ✨ where are my props? Destructure them here
   const { 
     updateArticle, 
-    postArticle, 
-    article, 
+    postArticle, article, 
     currentArticleId
   } = props;
 
@@ -44,8 +44,7 @@ export default function ArticleForm(props) {
       postArticle(values);
     }
     setValues(initialFormValues)
-  }
-
+  };
   const isDisabled = () => {
     // ✨ implement
     // Make sure the inputs have some values
@@ -61,7 +60,7 @@ export default function ArticleForm(props) {
     // ✨ fix the JSX: make the heading display either "Edit" or "Create"
     // and replace Function.prototype with the correct function
     <form id="form" onSubmit={onSubmit}>
-      <h2>{!article ? "Create" : "Edit"} Article</h2>
+      <h2>{!articles ? "Create" : "Edit"} Article</h2>
       <input
         maxLength={50}
         onChange={onChange}
