@@ -30,7 +30,7 @@ export default function Articles(props) {
       {
         !articles.length
           ? 'No articles yet'
-          : articles.map((art) => {
+          : articles.map(art => {
             return (
               <div className="article" key={art.article_id}>
                 <div>
@@ -39,8 +39,8 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={false} onClick={() => setCurrentArticleId(art.article_id)}>Edit</button>
-                  <button disabled={false} onClick={() => deleteArticle(art.article_id)}>Delete</button>
+                  <button disabled={false} onClick={evt => setCurrentArticleId(art)}>Edit</button>
+                  <button disabled={false} onClick={evt => deleteArticle(art.article_id)}>Delete</button>
                 </div>
               </div>
             )
